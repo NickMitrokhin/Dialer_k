@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_contacts">
+
+    <fragment
+        android:id="@+id/nav_contacts"
+        android:name="com.nickmitrokhin.dialer.ui.contacts.ContactsFragment"
+        android:label="@string/menu_contacts"
+        tools:layout="@layout/fragment_contacts" >
+        <action
+            android:id="@+id/action_nav_contacts_to_nav_phones"
+            app:destination="@id/nav_phones"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.nickmitrokhin.dialer.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/nav_phones"
+        android:name="com.nickmitrokhin.dialer.ui.phones.PhonesFragment"
+        tools:layout="@layout/fragment_phones" >
+        <action
+            android:id="@+id/action_nav_phones_to_nav_dialer"
+            app:destination="@id/nav_dialer"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <argument
+            android:name="contactID"
+            app:argType="string" />
+        <argument
+            android:name="contactName"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_dialer"
+        android:name="com.nickmitrokhin.dialer.ui.dialer.DialerFragment"
+        android:label="Calling"
+        tools:layout="@layout/fragment_dialer" >
+        <argument
+            android:name="phone"
+            app:argType="string" />
+    </fragment>
+</navigation>
