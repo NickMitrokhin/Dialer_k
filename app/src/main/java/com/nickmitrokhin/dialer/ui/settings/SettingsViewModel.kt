@@ -56,7 +56,7 @@ class SettingsViewModel(prefsRepository: PreferencesRepository) :
     }
 
     fun saveState() {
-        viewModelScope.launch {
+        runJob {
             savePreferences(uiState.value)
         }
     }

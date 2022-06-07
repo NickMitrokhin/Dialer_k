@@ -35,7 +35,7 @@ class PhonesFragment : Fragment() {
         }
         viewModel = ViewModelProvider(
             owner = this,
-            factory = ViewModelFactory(this, requireActivity().applicationContext)
+            factory = ViewModelFactory(this, requireActivity())
         )[PhonesViewModel::class.java]
 
         initBinding(inflater, container)
@@ -52,6 +52,22 @@ class PhonesFragment : Fragment() {
         }
     }
 
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.send_sms) {
+            val adapter = binding.phoneList.adapter as PhonesAdapter
+            val position = adapter.position
+
+            if (position >= 0) {
+                val phoneNumber = adapter.dataItems[position]
+                val bodySMS = "${contactName}: $phoneNumber"
+
+                viewModel.action(UIAction.CreateSms(bodySMS))
+            }
+        }
+
+        return super.onContextItemSelected(item)
+    }
+
     private fun initViewTitle() {
         (requireActivity() as AppCompatActivity).supportActionBar?.title = contactName
     }
@@ -62,6 +78,7 @@ class PhonesFragment : Fragment() {
     }
 
     private fun bindPhoneList() {
+        registerForContextMenu(binding.phoneList)
         bindWithLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiState.collect { value ->
                 (binding.phoneList.adapter as PhonesAdapter).dataItems = value.phones

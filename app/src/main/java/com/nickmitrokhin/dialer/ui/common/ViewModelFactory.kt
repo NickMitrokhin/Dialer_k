@@ -10,10 +10,12 @@ import com.nickmitrokhin.dialer.data.dataSources.ContactPhonesDataSource
 import com.nickmitrokhin.dialer.data.repositories.ContactsRepository
 import com.nickmitrokhin.dialer.data.repositories.PreferencesRepository
 import com.nickmitrokhin.dialer.dataStore
+import com.nickmitrokhin.dialer.domain.useCases.CreateSmsUseCase
 import com.nickmitrokhin.dialer.domain.useCases.FilterContactsUseCase
 import com.nickmitrokhin.dialer.domain.useCases.GetContactPhonesUseCase
 import com.nickmitrokhin.dialer.domain.useCases.GetContactsUseCase
 import com.nickmitrokhin.dialer.system.ServiceRepository
+import com.nickmitrokhin.dialer.system.SmsHelper
 import com.nickmitrokhin.dialer.ui.contacts.ContactsViewModel
 import com.nickmitrokhin.dialer.ui.dialer.DialerViewModel
 import com.nickmitrokhin.dialer.ui.phones.PhonesViewModel
@@ -40,7 +42,9 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(PhonesViewModel::class.java) -> {
                 val getContactPhonesUseCase = GetContactPhonesUseCase(createContactsRepository(context))
-                PhonesViewModel(getContactPhonesUseCase, createPreferencesRepository(context)) as T
+                val smsHelper = SmsHelper(context)
+                val createSmsUseCase = CreateSmsUseCase(smsHelper)
+                PhonesViewModel(getContactPhonesUseCase, createSmsUseCase, createPreferencesRepository(context)) as T
             }
             modelClass.isAssignableFrom(DialerViewModel::class.java) -> {
                 DialerViewModel(ServiceRepository(context), createPreferencesRepository(context)) as T

@@ -15,4 +15,5 @@
     <string name="pers_intent">PERSISTENT_INTENT</string>
     <string name="phone_no_prefix">tel:</string>
     <string name="text_attempts_prefix">Attempts:</string>
+    <string name="send_sms">Send via SMS</string>
 </resources>

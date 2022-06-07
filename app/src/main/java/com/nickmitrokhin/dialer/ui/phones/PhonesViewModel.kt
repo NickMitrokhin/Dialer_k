@@ -2,6 +2,7 @@ package com.nickmitrokhin.dialer.ui.phones
 
 import androidx.lifecycle.viewModelScope
 import com.nickmitrokhin.dialer.data.repositories.PreferencesRepository
+import com.nickmitrokhin.dialer.domain.useCases.CreateSmsUseCase
 import com.nickmitrokhin.dialer.domain.useCases.GetContactPhonesUseCase
 import com.nickmitrokhin.dialer.ui.common.AppViewModel
 import kotlinx.coroutines.flow.*
@@ -9,6 +10,7 @@ import kotlinx.coroutines.launch
 
 sealed class UIAction {
     data class Contact(val id: String) : UIAction()
+    data class CreateSms(val text: String) : UIAction()
 }
 
 data class UIState(
@@ -18,7 +20,8 @@ data class UIState(
 
 class PhonesViewModel(
     private val getContactPhonesUseCase: GetContactPhonesUseCase,
-    prefsRepository: PreferencesRepository
+    private val createSmsUseCase: CreateSmsUseCase,
+    prefsRepository: PreferencesRepository,
 ) : AppViewModel<UIAction, UIState>(prefsRepository) {
     private val _uiState = MutableStateFlow(
         UIState(
@@ -33,20 +36,27 @@ class PhonesViewModel(
     }
 
     private fun collectState() {
-        viewModelScope.launch {
+        runJob {
             actionState
-                .filterIsInstance<UIAction.Contact>()
                 .distinctUntilChanged()
                 .onStart {
                     emit(UIAction.Contact(id = ""))
                 }
                 .collectLatest {
-                    _uiState.emit(
-                        UIState(
-                            contactID = it.id,
-                            phones = getContactPhonesUseCase(it.id)
-                        )
-                    )
+                    when (it) {
+                        is UIAction.Contact -> {
+                            _uiState.emit(
+                                UIState(
+                                    contactID = it.id,
+                                    phones = getContactPhonesUseCase(it.id)
+                                )
+                            )
+                        }
+                        is UIAction.CreateSms -> {
+                            createSmsUseCase(it.text)
+                        }
+                    }
+
                 }
         }
     }
