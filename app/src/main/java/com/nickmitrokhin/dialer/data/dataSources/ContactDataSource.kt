@@ -34,9 +34,15 @@ class ContactDataSource(private val contentResolver: ContentResolver) : IContact
 
                 if (contactHasPhoneNumbers) {
                     val contactUri =
-                        ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactID.toLong())
+                        ContentUris.withAppendedId(
+                            ContactsContract.Contacts.CONTENT_URI,
+                            contactID.toLong()
+                        )
                     val photoUri =
-                        Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
+                        Uri.withAppendedPath(
+                            contactUri,
+                            ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
+                        )
 
                     result.add(Contact(contactID, contactName, photoUri.toString()))
                 }

@@ -15,7 +15,7 @@ class PhoneCallInfoDataSource(
 ) {
     private fun getFilterExpression(): String {
         val callType =
-            if(phoneCallStatus == PhoneCallStatus.OUT_ENDED) CallLog.Calls.OUTGOING_TYPE else CallLog.Calls.INCOMING_TYPE
+            if (phoneCallStatus == PhoneCallStatus.OUT_ENDED) CallLog.Calls.OUTGOING_TYPE else CallLog.Calls.INCOMING_TYPE
         return "${CallLog.Calls.TYPE}=${callType} and ${CallLog.Calls.NUMBER}='${phoneNumber}' and ${CallLog.Calls.DATE}>=${startPhoneCallTime}"
     }
 
@@ -29,11 +29,11 @@ class PhoneCallInfoDataSource(
                 filterExpression,
                 null, "${CallLog.Calls.DATE} desc"
             )
-            if(cursor != null && cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
                 val colIndex = cursor.getColumnIndex(CallLog.Calls.DURATION)
                 result = cursor.getString(colIndex).toInt()
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
         } finally {
             cursor?.close()
         }

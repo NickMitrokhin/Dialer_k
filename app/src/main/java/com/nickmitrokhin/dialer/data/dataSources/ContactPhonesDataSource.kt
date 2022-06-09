@@ -9,9 +9,10 @@ import kotlinx.coroutines.withContext
 class ContactPhonesDataSource(private val contentResolver: ContentResolver) :
     IContactPhonesDataSource {
     override suspend fun fetchContactPhones(contactID: String) = withContext<List<String>>(
-        Dispatchers.IO) {
+        Dispatchers.IO
+    ) {
         val result: ArrayList<String> = ArrayList()
-        if(contactID.isNotEmpty()) {
+        if (contactID.isNotEmpty()) {
             val curPhones = contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null,
@@ -23,7 +24,8 @@ class ContactPhonesDataSource(private val contentResolver: ContentResolver) :
                 while (crPhones.moveToNext()) {
                     val phoneNumberColumnIndex =
                         crPhones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                    val phoneNo = getSanitizedPhoneNumber(crPhones.getString(phoneNumberColumnIndex))
+                    val phoneNo =
+                        getSanitizedPhoneNumber(crPhones.getString(phoneNumberColumnIndex))
                     if (phoneNo != null && !result.contains(phoneNo)) {
                         result.add(phoneNo)
                     }

@@ -58,18 +58,20 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) :
         )
     }
 
-    override suspend fun saveContactsPrefs(preferences: ContactsPrefs) = withContext<Unit>(Dispatchers.IO) {
-        dataStore.edit { prefs ->
-            prefs[PreferencesKeys.CONTACT_SEARCH_QUERY] = preferences.searchQuery
-            prefs[PreferencesKeys.CONTACT_SCROLL_POSITION] = preferences.scrollPosition
-            prefs[PreferencesKeys.CONTACT_SEARCH_ENABLED] = preferences.searchEnabled
+    override suspend fun saveContactsPrefs(preferences: ContactsPrefs) =
+        withContext<Unit>(Dispatchers.IO) {
+            dataStore.edit { prefs ->
+                prefs[PreferencesKeys.CONTACT_SEARCH_QUERY] = preferences.searchQuery
+                prefs[PreferencesKeys.CONTACT_SCROLL_POSITION] = preferences.scrollPosition
+                prefs[PreferencesKeys.CONTACT_SEARCH_ENABLED] = preferences.searchEnabled
+            }
         }
-    }
 
-    override suspend fun saveSettingsPrefs(preferences: SettingsPrefs) = withContext<Unit>(Dispatchers.IO) {
-        dataStore.edit { prefs ->
-            prefs[PreferencesKeys.SETTINGS_DIAL_COUNT] = preferences.dialCount.toInt()
-            prefs[PreferencesKeys.SETTINGS_TIMEOUT] = preferences.timeout.toInt()
+    override suspend fun saveSettingsPrefs(preferences: SettingsPrefs) =
+        withContext<Unit>(Dispatchers.IO) {
+            dataStore.edit { prefs ->
+                prefs[PreferencesKeys.SETTINGS_DIAL_COUNT] = preferences.dialCount.toInt()
+                prefs[PreferencesKeys.SETTINGS_TIMEOUT] = preferences.timeout.toInt()
+            }
         }
-    }
 }
