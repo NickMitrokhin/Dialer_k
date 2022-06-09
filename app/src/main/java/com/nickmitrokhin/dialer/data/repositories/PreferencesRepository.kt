@@ -6,9 +6,11 @@ import com.nickmitrokhin.dialer.domain.models.ContactsPrefs
 import com.nickmitrokhin.dialer.domain.models.SettingsPrefs
 import com.nickmitrokhin.dialer.domain.models.UserPreferences
 import com.nickmitrokhin.dialer.domain.repositories.IPreferencesRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 
@@ -56,7 +58,7 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) :
         )
     }
 
-    override suspend fun saveContactsPrefs(preferences: ContactsPrefs) {
+    override suspend fun saveContactsPrefs(preferences: ContactsPrefs) = withContext<Unit>(Dispatchers.IO) {
         dataStore.edit { prefs ->
             prefs[PreferencesKeys.CONTACT_SEARCH_QUERY] = preferences.searchQuery
             prefs[PreferencesKeys.CONTACT_SCROLL_POSITION] = preferences.scrollPosition
@@ -64,7 +66,7 @@ class PreferencesRepository(private val dataStore: DataStore<Preferences>) :
         }
     }
 
-    override suspend fun saveSettingsPrefs(preferences: SettingsPrefs) {
+    override suspend fun saveSettingsPrefs(preferences: SettingsPrefs) = withContext<Unit>(Dispatchers.IO) {
         dataStore.edit { prefs ->
             prefs[PreferencesKeys.SETTINGS_DIAL_COUNT] = preferences.dialCount.toInt()
             prefs[PreferencesKeys.SETTINGS_TIMEOUT] = preferences.timeout.toInt()

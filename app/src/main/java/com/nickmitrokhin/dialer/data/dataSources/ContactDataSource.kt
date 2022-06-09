@@ -7,9 +7,11 @@ import android.net.Uri
 import android.provider.ContactsContract
 import com.nickmitrokhin.dialer.domain.dataSources.IContactDataSource
 import com.nickmitrokhin.dialer.domain.models.Contact
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ContactDataSource(private val contentResolver: ContentResolver) : IContactDataSource {
-    override suspend fun fetchContacts(): List<Contact> {
+    override suspend fun fetchContacts() = withContext<List<Contact>>(Dispatchers.IO) {
         val curContacts: Cursor? = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
             null, null, null,
@@ -41,6 +43,6 @@ class ContactDataSource(private val contentResolver: ContentResolver) : IContact
             }
         }
 
-        return result
+        result
     }
 }

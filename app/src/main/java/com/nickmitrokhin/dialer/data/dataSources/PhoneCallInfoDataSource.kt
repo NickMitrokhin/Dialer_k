@@ -4,6 +4,8 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
 import com.nickmitrokhin.dialer.domain.models.PhoneCallStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PhoneCallInfoDataSource(
     private val context: Context,
@@ -17,7 +19,7 @@ class PhoneCallInfoDataSource(
         return "${CallLog.Calls.TYPE}=${callType} and ${CallLog.Calls.NUMBER}='${phoneNumber}' and ${CallLog.Calls.DATE}>=${startPhoneCallTime}"
     }
 
-    suspend fun fetchCallDuration(): Int {
+    suspend fun fetchCallDuration() = withContext(Dispatchers.IO) {
         var cursor: Cursor? = null
         var result = 0
         try {
@@ -35,6 +37,6 @@ class PhoneCallInfoDataSource(
         } finally {
             cursor?.close()
         }
-        return result
+        result
     }
 }

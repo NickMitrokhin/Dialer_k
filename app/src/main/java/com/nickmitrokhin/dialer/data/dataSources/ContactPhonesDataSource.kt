@@ -3,10 +3,13 @@ package com.nickmitrokhin.dialer.data.dataSources
 import android.content.ContentResolver
 import android.provider.ContactsContract
 import com.nickmitrokhin.dialer.domain.dataSources.IContactPhonesDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ContactPhonesDataSource(private val contentResolver: ContentResolver) :
     IContactPhonesDataSource {
-    override suspend fun fetchContactPhones(contactID: String): List<String> {
+    override suspend fun fetchContactPhones(contactID: String) = withContext<List<String>>(
+        Dispatchers.IO) {
         val result: ArrayList<String> = ArrayList()
         if(contactID.isNotEmpty()) {
             val curPhones = contentResolver.query(
@@ -27,7 +30,7 @@ class ContactPhonesDataSource(private val contentResolver: ContentResolver) :
                 }
             }
         }
-        return result
+        result
     }
 
     companion object {
