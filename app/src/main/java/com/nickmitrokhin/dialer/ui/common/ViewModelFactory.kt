@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.nickmitrokhin.dialer.data.dataSources.ContactDataSource
-import com.nickmitrokhin.dialer.data.dataSources.ContactPhonesDataSource
 import com.nickmitrokhin.dialer.data.repositories.ContactsRepository
 import com.nickmitrokhin.dialer.data.repositories.PreferencesRepository
 import com.nickmitrokhin.dialer.dataStore
@@ -33,8 +32,8 @@ class ViewModelFactory(
     ): T {
         return when {
             modelClass.isAssignableFrom(ContactsViewModel::class.java) -> {
-                val getContactsUseCase = GetContactsUseCase(createContactsRepository(context))
-                val filterContactsUseCase = FilterContactsUseCase(getContactsUseCase)
+                val contactRepository = createContactsRepository(context)
+                val filterContactsUseCase = FilterContactsUseCase(contactRepository)
                 ContactsViewModel(filterContactsUseCase, createPreferencesRepository(context)) as T
             }
             modelClass.isAssignableFrom(SettingsViewModel::class.java) -> {
@@ -62,9 +61,7 @@ class ViewModelFactory(
         private fun createContactsRepository(context: Context): ContactsRepository {
             if (contactsRepository == null) {
                 contactsRepository = ContactsRepository(
-                    contactDataSource = ContactDataSource(context.contentResolver),
-                    contactPhonesDataSource = ContactPhonesDataSource(context.contentResolver),
-                    dispatcher = Dispatchers.IO
+                    contactDataSource = ContactDataSource(context.contentResolver, Dispatchers.IO)
                 )
             }
             return contactsRepository!!
