@@ -58,7 +58,7 @@ class ContactsViewModel(
         uiState = combine(searchFlow, scrollFlow, searchEnabledFlow, ::Triple)
             .map { (search, scroll, searchEnabled) ->
                 val currentState = UIState(search.query, scroll.position, searchEnabled.enabled)
-                viewModelScope.launch {
+                runJob {
                     savePreferences(currentState)
                 }
                 currentState
