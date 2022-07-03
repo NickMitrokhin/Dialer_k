@@ -8,7 +8,6 @@ import com.nickmitrokhin.dialer.domain.repositories.IPreferencesRepository
 import com.nickmitrokhin.dialer.domain.useCases.FilterContactsUseCase
 import com.nickmitrokhin.dialer.ui.common.AppViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 
 sealed class UIAction {
@@ -20,7 +19,8 @@ sealed class UIAction {
 data class UIState(
     val searchQuery: String = "",
     val scrollPosition: Int = 0,
-    val searchEnabled: Boolean = false
+    val searchEnabled: Boolean = false,
+    val contacts: List<Contact> = emptyList()
 )
 
 class ContactsViewModel(
@@ -28,7 +28,6 @@ class ContactsViewModel(
     prefsRepository: IPreferencesRepository
 ) : AppViewModel<UIAction, UIState>(prefsRepository) {
     override val uiState: StateFlow<UIState>
-    val contacts: Flow<List<Contact>>
 
     init {
         val searchEnabledFlow = actionState
@@ -50,14 +49,14 @@ class ContactsViewModel(
                 emit(UIAction.Scroll(position = getPreferences().contacts.scrollPosition))
             }
 
-        contacts = combine(searchFlow, searchEnabledFlow, ::Pair)
-            .map { (search, searchEnabled) ->
-                filterContactsUseCase(if (searchEnabled.enabled) search.query else "")
-            }
-
         uiState = combine(searchFlow, scrollFlow, searchEnabledFlow, ::Triple)
             .map { (search, scroll, searchEnabled) ->
-                val currentState = UIState(search.query, scroll.position, searchEnabled.enabled)
+                val currentState = UIState(
+                    searchQuery = search.query,
+                    scrollPosition = scroll.position,
+                    searchEnabled = searchEnabled.enabled,
+                    contacts = filterContactsUseCase(if (searchEnabled.enabled) search.query else "")
+                )
                 runJob {
                     savePreferences(currentState)
                 }

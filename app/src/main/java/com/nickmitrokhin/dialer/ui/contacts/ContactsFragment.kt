@@ -55,7 +55,6 @@ class ContactsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        bindModelState()
         checkContactListAccess()
     }
 
@@ -72,23 +71,15 @@ class ContactsFragment : Fragment() {
             }
         }
         if (requirePermissions.isEmpty()) {
-            bindContactList()
+            bindModelState()
         } else {
             PermissionHelper.requestPermissions(
                 this,
                 requirePermissions.toTypedArray()
             ) { granted ->
                 if (granted) {
-                    bindContactList()
+                    bindModelState()
                 }
-            }
-        }
-    }
-
-    private fun bindContactList() {
-        bindWithLifecycle(Lifecycle.State.STARTED) {
-            viewModel.contacts.collect { value ->
-                (binding.contactList.adapter as ContactsAdapter).dataItems = value
             }
         }
     }
@@ -103,6 +94,8 @@ class ContactsFragment : Fragment() {
                         contactSearch.setText(state.searchQuery)
                         contactSearch.setSelection(state.searchQuery.length)
                     }
+
+                    (binding.contactList.adapter as ContactsAdapter).dataItems = state.contacts
 
                     if (state.scrollPosition != (contactList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()) {
                         contactList.scrollToPosition(state.scrollPosition)
